@@ -37,7 +37,7 @@ func TestGetOrderByID(t *testing.T) {
 		CustomerID: 2,
 		OrderType:  sql.NullString{String: "Normal", Valid: true},
 		Status:     sql.NullString{String: "Created", Valid: true},
-		CreatedAt:  sql.NullTime{Time: time.Now(), Valid: true}, // ✅ Correct Fix
+		CreatedAt:  sql.NullTime{Time: time.Now(), Valid: true},
 		UpdatedAt:  sql.NullTime{Time: time.Now(), Valid: true},
 	}
 
