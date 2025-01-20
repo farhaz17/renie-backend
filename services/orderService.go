@@ -57,9 +57,16 @@ func ApproveOrder(orderID int32) (*sqlc.Order, error) {
 	return &approvedOrder, nil
 }
 
-// DispatchOrder handles order dispatching with stock validation
+// DispatchOrder handles order dispatching with stock validation using a transaction
 func DispatchOrder(orderID int32) error {
-	q := sqlc.New(config.DB)
+	// Start a transaction
+	tx, err := config.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("error starting transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	q := sqlc.New(tx) // Use transaction for queries
 
 	// Fetch order items
 	orderItems, err := q.GetOrderItemsByOrderID(context.Background(), orderID)
@@ -82,7 +89,7 @@ func DispatchOrder(orderID int32) error {
 	// Deduct stock from products
 	for _, item := range orderItems {
 		err := q.UpdateProductStock(context.Background(), sqlc.UpdateProductStockParams{
-			Stock: item.Quantity, // Reduce stock by quantity
+			Stock: item.Quantity,
 			ID:    item.ProductID,
 		})
 		if err != nil {
@@ -94,6 +101,11 @@ func DispatchOrder(orderID int32) error {
 	err = q.DispatchOrder(context.Background(), orderID)
 	if err != nil {
 		return fmt.Errorf("error updating order status: %w", err)
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("error committing transaction: %w", err)
 	}
 
 	return nil
