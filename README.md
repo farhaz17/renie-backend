@@ -14,7 +14,7 @@ Ensure you have the following installed:
 ## Clone the Repository
 
 ```sh
-git clone https://github.com/your-repo/renie-backend.git
+git clone https://github.com/farhaz17/renie-backend.git
 cd renie-backend
 ```
 
