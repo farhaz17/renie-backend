@@ -18,6 +18,12 @@ git clone https://github.com/your-repo/renie-backend.git
 cd renie-backend
 ```
 
+## Install Dependencies
+
+```sh
+go mod tidy
+```
+
 ## Setup Environment Variables
 
 Create a `.env` file in the root directory and configure the database connection:
