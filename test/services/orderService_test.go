@@ -133,6 +133,9 @@ func TestDispatchOrder(t *testing.T) {
 	config.DB = db
 	defer func() { config.DB = originalDB }() // Restore original DB after test
 
+	// Mock transaction begin
+	mock.ExpectBegin()
+
 	// Test data
 	orderID := int32(1)
 	productID := int32(2)
@@ -161,10 +164,11 @@ func TestDispatchOrder(t *testing.T) {
 		WithArgs(orderID).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
-	// Call the function to test (without modifying DispatchOrder)
-	err = services.DispatchOrder(orderID)
+	// Mock Commit transaction
+	mock.ExpectCommit()
 
-	// Assertions
+	// Call the function to test
+	err = services.DispatchOrder(orderID)
 	assert.NoError(t, err)
 
 	// Verify all expectations are met
